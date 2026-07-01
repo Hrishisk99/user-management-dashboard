@@ -10,29 +10,42 @@ users, built against the [JSONPlaceholder](https://jsonplaceholder.typicode.com)
 ## Features
 
 - View users in a sortable table (click any column header to sort)
-- Add / Edit users via a modal form with client-side validation
+- Add / Edit users via a modal form with client-side validation — Edit
+  fetches the latest data for that user before opening the form
 - Delete users with a confirmation dialog
 - Debounced search across name, email, and department
 - Filter popup (first name, last name, email, department)
 - Pagination with selectable page size (10 / 25 / 50 / 100)
 - Responsive layout — table collapses into stacked cards on small screens
 - Error banner surfaced on any failed API request
+- Add/Edit/Delete persist across a refresh (cached in localStorage), with
+  a "Reset demo data" control to return to the original seed data
 
 ## Tech Stack
 
 - React 18 + Vite
 - Vanilla CSS (no UI framework, to keep the bundle small and styling explicit)
+  — type system is Space Grotesk (headings) + Inter (UI) + JetBrains Mono
+  (IDs/emails), loaded via Google Fonts in `index.html`
 - Vitest + Testing Library for unit tests
 - Fetch API for HTTP requests
+
+## Design Notes
+
+- Departments are tagged with a deterministic color (hashed from the
+  department name) so the same department always renders the same color,
+  making the table easier to scan without needing a legend.
+- The table collapses into stacked cards below 640px rather than
+  horizontally scrolling, since that reads better on a phone.
 
 ## Project Structure
 
 ```
 src/
-  components/     Presentational components (table, form, modals, etc.)
+  components/     Presentational components (table, form, modals, icons, etc.)
   hooks/          useUsers - all data state: fetch, CRUD, search/filter/sort/paginate
   services/       userService - all API calls + request/response mapping
-  utils/          validation - pure, testable form validation logic
+  utils/          validation, departmentTags, storage - pure, testable helpers
   __tests__/      Unit tests for services and utils
   App.jsx         Top-level component, wires hook + components together
   main.jsx        React entry point
@@ -65,12 +78,14 @@ npm run preview   # preview the production build locally
 - **`department` → `company.name`**: JSONPlaceholder has no department field,
   so `company.name` is reused as the department, both when reading and
   writing.
-- **No real persistence**: JSONPlaceholder simulates POST/PUT/DELETE
-  responses but doesn't actually store changes server-side. Add/Edit/Delete
-  are applied optimistically to local React state after a successful
-  response, so the UI behaves like a real CRUD app for the duration of the
-  session, but a page refresh resets to the original 10 seeded users. This
-  is called out explicitly since it's inherent to the mock API, not a bug.
+- **No real persistence at the API level, cached locally instead**:
+  JSONPlaceholder simulates POST/PUT/DELETE responses but doesn't actually
+  store changes server-side - a plain refresh would otherwise wipe out any
+  Add/Edit/Delete. Every Add/Edit/Delete still goes through a real API call
+  first (exactly as the spec requires); the resulting list is then cached
+  in `localStorage` purely so the UI reflects those changes across a
+  refresh too. A "Reset demo data" button (top of the toolbar) clears the
+  cache and reloads the original 10 seed users from the API.
 - **Client-side search/filter/sort/pagination**: since the dataset is small
   (10 users) and the API has no query params for these, all of it is done
   in-memory in the `useUsers` hook rather than via API calls.
@@ -92,7 +107,6 @@ npm run preview   # preview the production build locally
   waits for the API response before updating state).
 - Add end-to-end tests (Playwright/Cypress) covering the full add/edit/delete
   flows through the UI, not just unit tests on services/utils.
-- Persist local changes to `localStorage` so a refresh doesn't lose them.
 - Extract the modal overlay/shell into a shared `<Modal>` component — right
   now `UserForm`, `FilterPopup`, and `ConfirmDialog` each render their own
   overlay markup.

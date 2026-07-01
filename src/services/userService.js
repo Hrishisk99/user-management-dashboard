@@ -60,6 +60,19 @@ export async function fetchUsers() {
 }
 
 /**
+ * Fetch a single user by id.
+ * Used before opening the edit form, per the spec: "fetching the current
+ * data for a user, allowing for edits, and then putting the updated data
+ * back via the API" - rather than only reusing what's already in the
+ * in-memory list.
+ */
+export async function fetchUserById(id) {
+  const response = await fetch(`${BASE_URL}/${id}`);
+  const data = await handleResponse(response);
+  return mapUserFromApi(data);
+}
+
+/**
  * Create a new user.
  * Note: JSONPlaceholder does not persist writes - it simulates a 201
  * response with the payload echoed back (usually with id: 11). The calling
