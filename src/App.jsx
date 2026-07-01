@@ -9,11 +9,6 @@ import ConfirmDialog from './components/ConfirmDialog';
 import ErrorBanner from './components/ErrorBanner';
 import { PlusIcon, FilterIcon, RefreshIcon } from './components/icons';
 
-/**
- * App
- * Top-level component. Owns only UI/modal visibility state; all user
- * data logic lives in the useUsers hook.
- */
 export default function App() {
   const {
     users,
@@ -55,10 +50,6 @@ export default function App() {
   };
 
   const openEditForm = async (user) => {
-    // Show the form immediately with the cached row so the UI feels
-    // instant, then swap in freshly-fetched data once it arrives (per the
-    // spec's "fetch current data, then edit" flow). If the fetch fails,
-    // the cached data already in the form is a perfectly usable fallback.
     setEditingUser(user);
     setFormMode('edit');
     const fresh = await fetchUserForEdit(user.id);

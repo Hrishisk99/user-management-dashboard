@@ -1,11 +1,3 @@
-/* ==========================================================================
-   Design tokens
-   Palette: deep slate for structure, a single teal accent for interactive
-   elements, warm departmental tag colors for scannability. Type system:
-   Space Grotesk (display/headings - a technical, engineering-console feel)
-   paired with Inter (UI/body) and JetBrains Mono (IDs, emails, tabular data)
-   so dense data reads cleanly and distinctly from interface chrome.
-   ========================================================================== */
 :root {
   --color-bg: #f5f6f8;
   --color-surface: #ffffff;
