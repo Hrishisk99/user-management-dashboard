@@ -5,7 +5,8 @@ users, built against the [JSONPlaceholder](https://jsonplaceholder.typicode.com)
 `/users` API as part of the Ajackus frontend assignment.
 
 ## Live Demo
-[Add your deployed link here after deploying]
+Deployed on Vercel- [LINK](https://user-management-dashboard-eta-hazel.vercel.app/)
+
 
 ## Features
 
