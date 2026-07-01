@@ -1,0 +1,361 @@
+/* ==========================================================================
+   Design tokens
+   A quiet, data-forward palette: deep slate for structure, a single teal
+   accent for interactive elements, and a monospace face for IDs/emails so
+   tabular data reads cleanly - this is an admin tool, not a marketing page.
+   ========================================================================== */
+:root {
+  --color-bg: #f6f7f9;
+  --color-surface: #ffffff;
+  --color-border: #e2e5ea;
+  --color-text: #1c2333;
+  --color-text-muted: #667085;
+  --color-slate: #1c2333;
+  --color-accent: #0f766e;
+  --color-accent-hover: #0b5c56;
+  --color-danger: #b42318;
+  --color-danger-bg: #fef3f2;
+
+  --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  --radius: 6px;
+  --shadow: 0 1px 3px rgba(28, 35, 51, 0.08), 0 1px 2px rgba(28, 35, 51, 0.06);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+.app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+
+/* ---------- Header ---------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.app-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-slate);
+  margin: 0;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: white;
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+}
+
+.btn-secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--color-accent);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: white;
+}
+.btn-danger:hover:not(:disabled) {
+  background: #8f1c11;
+}
+
+.btn-link {
+  background: none;
+  color: var(--color-accent);
+  text-decoration: underline;
+  padding: 8px 4px;
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 0.8rem;
+  margin-right: 6px;
+}
+
+/* ---------- Toolbar ---------- */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.search-bar {
+  flex: 1;
+  min-width: 220px;
+  padding: 9px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+.search-bar:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+/* ---------- Error banner ---------- */
+.error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--color-danger-bg);
+  color: var(--color-danger);
+  border: 1px solid #fda29b;
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+.error-dismiss {
+  background: none;
+  border: none;
+  color: var(--color-danger);
+  font-size: 1.1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* ---------- Table ---------- */
+.table-wrapper {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow-x: auto;
+}
+
+.user-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.user-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background: var(--color-slate);
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+.user-table th:hover {
+  background: #2a3346;
+}
+
+.sort-indicator {
+  color: #8fb8b4;
+}
+
+.user-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.user-table td[data-label='Email'] {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.user-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.user-table tbody tr:hover {
+  background: #fafbfc;
+}
+
+.actions-col {
+  white-space: nowrap;
+}
+
+.empty-state,
+.loading-state {
+  padding: 48px 20px;
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--color-surface);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius);
+}
+
+/* ---------- Pagination ---------- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pagination-controls select {
+  padding: 6px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  font-family: inherit;
+}
+
+/* ---------- Modal ---------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(28, 35, 51, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 100;
+}
+
+.modal {
+  background: var(--color-surface);
+  border-radius: 8px;
+  padding: 24px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 12px 32px rgba(28, 35, 51, 0.25);
+}
+
+.modal-sm {
+  max-width: 360px;
+}
+
+.modal h2 {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+  color: var(--color-slate);
+}
+
+.form-field {
+  margin-bottom: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.form-field label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.form-field input {
+  padding: 9px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+.form-field input[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.field-error {
+  color: var(--color-danger);
+  font-size: 0.78rem;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+/* ---------- Responsive: collapse table into stacked cards on mobile ---------- */
+@media (max-width: 640px) {
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .user-table thead {
+    display: none;
+  }
+
+  .user-table,
+  .user-table tbody,
+  .user-table tr,
+  .user-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .user-table tr {
+    border-bottom: 1px solid var(--color-border);
+    padding: 10px 4px;
+  }
+
+  .user-table td {
+    border: none;
+    padding: 4px 12px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .user-table td::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: var(--color-text-muted);
+  }
+
+  .pagination {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
