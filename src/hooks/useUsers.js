@@ -4,21 +4,6 @@ import { loadStoredUsers, saveStoredUsers, clearStoredUsers } from '../utils/sto
 
 const EMPTY_FILTERS = { firstName: '', lastName: '', email: '', department: '' };
 
-/**
- * useUsers
- *
- * Central hook for the dashboard. Owns:
- *  - the raw user list (fetched from the API on first-ever load, then
- *    cached in localStorage so Add/Edit/Delete survive a page refresh -
- *    see utils/storage.js for why that's needed)
- *  - loading / error state
- *  - CRUD operations (optimistic local updates, since JSONPlaceholder
- *    doesn't actually persist writes server-side)
- *  - search, filter, sort and pagination, derived from the raw list
- *
- * Pulling this out of App.jsx keeps the component tree focused on
- * rendering, and makes the data logic independently testable.
- */
 export function useUsers() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,9 +15,6 @@ export function useUsers() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // Initial load: use the cached list if one exists (so previous
-  // Add/Edit/Delete are still visible), otherwise fetch the seed data
-  // from the API and cache it for next time.
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
@@ -116,13 +98,6 @@ export function useUsers() {
     }
   }, []);
 
-  /**
-   * Fetches the current server-side data for a single user before editing,
-   * per the assignment spec ("fetching the current data for a user,
-   * allowing for edits, and then putting the updated data back"). Returns
-   * null on failure so the caller can fall back to the cached row instead
-   * of blocking the edit flow entirely.
-   */
   const fetchUserForEdit = useCallback(async (id) => {
     try {
       return await userService.fetchUserById(id);
@@ -131,11 +106,6 @@ export function useUsers() {
     }
   }, []);
 
-  /**
-   * Clears the local cache and re-fetches the original seed data from the
-   * API - lets a user (or an interviewer poking at the demo) get back to a
-   * clean slate without clearing browser storage manually.
-   */
   const resetToSeedData = useCallback(async () => {
     setError(null);
     setLoading(true);
@@ -151,7 +121,6 @@ export function useUsers() {
     }
   }, []);
 
-  // Search -> filter -> sort pipeline. Recomputed only when an input changes.
   const processedUsers = useMemo(() => {
     let result = [...users];
 
@@ -194,7 +163,6 @@ export function useUsers() {
     return processedUsers.slice(start, start + pageSize);
   }, [processedUsers, currentPage, pageSize]);
 
-  // Reset to page 1 whenever the result set changes shape (new search/filter/sort/pageSize).
   useEffect(() => {
     setPage(1);
   }, [search, filters, sortBy, pageSize]);

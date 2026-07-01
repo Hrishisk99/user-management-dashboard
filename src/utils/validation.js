@@ -1,11 +1,3 @@
-/**
- * validation.js
- *
- * Pure, framework-free validation logic for the user form.
- * Kept separate from the form component so it can be unit-tested in
- * isolation and reused anywhere (e.g. if a second form is added later).
- */
-
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**

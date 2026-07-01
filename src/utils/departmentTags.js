@@ -1,11 +1,3 @@
-/**
- * departmentTags.js
- * Deterministically maps a department name to one of a fixed set of
- * accent colors, so the same department always renders with the same
- * tag color across the app (and across reloads) without needing to
- * store a color mapping anywhere.
- */
-
 const PALETTE = [
   { bg: '#e6f4f1', fg: '#0f766e' }, // teal
   { bg: '#eef2ff', fg: '#4338ca' }, // indigo
@@ -25,7 +17,6 @@ export function getDepartmentColor(department) {
   return PALETTE[Math.abs(hash) % PALETTE.length];
 }
 
-/** First letters of first + last name, used for the avatar badge. */
 export function getInitials(firstName, lastName) {
   const a = (firstName || '').trim()[0] || '';
   const b = (lastName || '').trim()[0] || '';
