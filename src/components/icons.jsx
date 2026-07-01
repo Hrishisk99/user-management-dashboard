@@ -1,12 +1,5 @@
 import React from 'react';
 
-/**
- * icons.jsx
- * A handful of inline SVG icons used across the UI. Kept as simple
- * function components (not an external icon library) to avoid an
- * unnecessary dependency for ~6 glyphs.
- */
-
 const base = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' };
 
 export const SearchIcon = (props) => (

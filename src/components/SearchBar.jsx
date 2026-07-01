@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SearchIcon } from './icons';
 
-/**
- * SearchBar
- * Debounces keystrokes by 300ms before pushing the value up to useUsers,
- * so we don't re-filter the whole list on every single character typed.
- */
 export default function SearchBar({ value, onChange }) {
   const [localValue, setLocalValue] = useState(value);
 

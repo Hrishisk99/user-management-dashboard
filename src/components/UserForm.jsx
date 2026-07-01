@@ -3,12 +3,6 @@ import { validateUserForm } from '../utils/validation';
 
 const EMPTY_USER = { firstName: '', lastName: '', email: '', department: '' };
 
-/**
- * UserForm
- * Modal form used for both Add and Edit flows (determined by whether
- * `initialUser` is passed in). Runs client-side validation before
- * calling onSubmit, and shows per-field error messages.
- */
 export default function UserForm({ initialUser, onSubmit, onCancel, submitting }) {
   const [values, setValues] = useState(initialUser || EMPTY_USER);
   const [errors, setErrors] = useState({});

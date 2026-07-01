@@ -10,12 +10,6 @@ const COLUMNS = [
   { field: 'department', label: 'Department' },
 ];
 
-/**
- * UserTable
- * Renders the user list with clickable, sortable column headers and
- * per-row Edit/Delete actions. Purely presentational - all state lives
- * in useUsers and is passed down as props.
- */
 export default function UserTable({ users, sortBy, onSort, onEdit, onDelete }) {
   const handleHeaderClick = (field) => {
     const direction = sortBy.field === field && sortBy.direction === 'asc' ? 'desc' : 'asc';

@@ -1,12 +1,4 @@
 import React, { useState } from 'react';
-
-/**
- * FilterPopup
- * Lets the user filter the table by first name, last name, email and
- * department simultaneously. Keeps a local draft of the filters so
- * typing doesn't re-filter the table on every keystroke - the parent
- * state only updates when "Apply" is clicked.
- */
 export default function FilterPopup({ filters, onApply, onClear, onClose }) {
   const [draft, setDraft] = useState(filters);
 

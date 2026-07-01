@@ -3,11 +3,6 @@ import { ArrowLeft, ArrowRight } from './icons';
 
 const PAGE_SIZE_OPTIONS = [10, 25, 50, 100];
 
-/**
- * Pagination
- * Page-size selector + prev/next controls. Kept dumb/presentational -
- * all page math happens in useUsers.
- */
 export default function Pagination({ page, totalPages, pageSize, totalResults, onPageChange, onPageSizeChange }) {
   return (
     <div className="pagination">
