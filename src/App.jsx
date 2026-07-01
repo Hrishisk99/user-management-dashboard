@@ -7,6 +7,7 @@ import Pagination from './components/Pagination';
 import SearchBar from './components/SearchBar';
 import ConfirmDialog from './components/ConfirmDialog';
 import ErrorBanner from './components/ErrorBanner';
+import { PlusIcon, FilterIcon, RefreshIcon } from './components/icons';
 
 /**
  * App
@@ -23,6 +24,8 @@ export default function App() {
     addUser,
     editUser,
     removeUser,
+    fetchUserForEdit,
+    resetToSeedData,
     search,
     setSearch,
     filters,
@@ -42,6 +45,7 @@ export default function App() {
   const [showFilters, setShowFilters] = useState(false);
   const [userPendingDelete, setUserPendingDelete] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
 
   const activeFilterCount = Object.values(filters).filter((v) => v && v.trim()).length;
 
@@ -50,9 +54,15 @@ export default function App() {
     setFormMode('add');
   };
 
-  const openEditForm = (user) => {
+  const openEditForm = async (user) => {
+    // Show the form immediately with the cached row so the UI feels
+    // instant, then swap in freshly-fetched data once it arrives (per the
+    // spec's "fetch current data, then edit" flow). If the fetch fails,
+    // the cached data already in the form is a perfectly usable fallback.
     setEditingUser(user);
     setFormMode('edit');
+    const fresh = await fetchUserForEdit(user.id);
+    if (fresh) setEditingUser(fresh);
   };
 
   const closeForm = () => {
@@ -74,12 +84,20 @@ export default function App() {
     await removeUser(target.id);
   };
 
+  const handleResetConfirm = async () => {
+    setShowResetConfirm(false);
+    await resetToSeedData();
+  };
+
   return (
     <div className="app">
       <header className="app-header">
-        <h1>User Management Dashboard</h1>
+        <div>
+          <p className="app-eyebrow">Directory</p>
+          <h1>User Management Dashboard</h1>
+        </div>
         <button className="btn btn-primary" onClick={openAddForm}>
-          + Add User
+          <PlusIcon width={15} height={15} /> Add User
         </button>
       </header>
 
@@ -88,17 +106,23 @@ export default function App() {
       <div className="toolbar">
         <SearchBar value={search} onChange={setSearch} />
         <button className="btn btn-secondary" onClick={() => setShowFilters(true)}>
-          Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
+          <FilterIcon width={14} height={14} /> Filter{activeFilterCount > 0 ? ` (${activeFilterCount})` : ''}
         </button>
         {activeFilterCount > 0 && (
           <button className="btn btn-link" onClick={clearFilters}>
             Clear filters
           </button>
         )}
+        <button className="btn btn-secondary btn-icon" onClick={() => setShowResetConfirm(true)} title="Reset to original seed data" aria-label="Reset demo data">
+          <RefreshIcon width={14} height={14} />
+        </button>
       </div>
 
       {loading ? (
-        <div className="loading-state">Loading users...</div>
+        <div className="loading-state">
+          <span className="spinner" aria-hidden="true" />
+          Loading users...
+        </div>
       ) : (
         <>
           <UserTable
@@ -143,6 +167,16 @@ export default function App() {
           message={`This will permanently remove ${userPendingDelete.firstName} ${userPendingDelete.lastName}.`}
           onConfirm={handleDeleteConfirm}
           onCancel={() => setUserPendingDelete(null)}
+        />
+      )}
+
+      {showResetConfirm && (
+        <ConfirmDialog
+          title="Reset demo data?"
+          message="This clears any local Add/Edit/Delete changes and reloads the original seed data from the API."
+          confirmLabel="Reset"
+          onConfirm={handleResetConfirm}
+          onCancel={() => setShowResetConfirm(false)}
         />
       )}
     </div>

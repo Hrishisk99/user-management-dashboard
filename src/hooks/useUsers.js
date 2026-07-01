@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import * as userService from '../services/userService';
+import { loadStoredUsers, saveStoredUsers, clearStoredUsers } from '../utils/storage';
 
 const EMPTY_FILTERS = { firstName: '', lastName: '', email: '', department: '' };
 
@@ -7,10 +8,12 @@ const EMPTY_FILTERS = { firstName: '', lastName: '', email: '', department: '' }
  * useUsers
  *
  * Central hook for the dashboard. Owns:
- *  - the raw user list (fetched once from the API)
+ *  - the raw user list (fetched from the API on first-ever load, then
+ *    cached in localStorage so Add/Edit/Delete survive a page refresh -
+ *    see utils/storage.js for why that's needed)
  *  - loading / error state
  *  - CRUD operations (optimistic local updates, since JSONPlaceholder
- *    doesn't actually persist writes)
+ *    doesn't actually persist writes server-side)
  *  - search, filter, sort and pagination, derived from the raw list
  *
  * Pulling this out of App.jsx keeps the component tree focused on
@@ -27,14 +30,31 @@ export function useUsers() {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // Initial load
+  // Initial load: use the cached list if one exists (so previous
+  // Add/Edit/Delete are still visible), otherwise fetch the seed data
+  // from the API and cache it for next time.
   useEffect(() => {
     let cancelled = false;
     setLoading(true);
+
+    const cached = loadStoredUsers();
+    if (cached) {
+      if (!cancelled) {
+        setUsers(cached);
+        setLoading(false);
+      }
+      return () => {
+        cancelled = true;
+      };
+    }
+
     userService
       .fetchUsers()
       .then((data) => {
-        if (!cancelled) setUsers(data);
+        if (!cancelled) {
+          setUsers(data);
+          saveStoredUsers(data);
+        }
       })
       .catch(() => {
         if (!cancelled) setError('Could not load users. Please check your connection and try again.');
@@ -42,6 +62,7 @@ export function useUsers() {
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
+
     return () => {
       cancelled = true;
     };
@@ -51,7 +72,11 @@ export function useUsers() {
     setError(null);
     try {
       const created = await userService.createUser(userData);
-      setUsers((prev) => [created, ...prev]);
+      setUsers((prev) => {
+        const next = [created, ...prev];
+        saveStoredUsers(next);
+        return next;
+      });
       return true;
     } catch {
       setError('Failed to add user. Please try again.');
@@ -63,7 +88,11 @@ export function useUsers() {
     setError(null);
     try {
       const updated = await userService.updateUser(id, userData);
-      setUsers((prev) => prev.map((u) => (u.id === id ? updated : u)));
+      setUsers((prev) => {
+        const next = prev.map((u) => (u.id === id ? updated : u));
+        saveStoredUsers(next);
+        return next;
+      });
       return true;
     } catch {
       setError('Failed to update user. Please try again.');
@@ -75,11 +104,50 @@ export function useUsers() {
     setError(null);
     try {
       await userService.deleteUser(id);
-      setUsers((prev) => prev.filter((u) => u.id !== id));
+      setUsers((prev) => {
+        const next = prev.filter((u) => u.id !== id);
+        saveStoredUsers(next);
+        return next;
+      });
       return true;
     } catch {
       setError('Failed to delete user. Please try again.');
       return false;
+    }
+  }, []);
+
+  /**
+   * Fetches the current server-side data for a single user before editing,
+   * per the assignment spec ("fetching the current data for a user,
+   * allowing for edits, and then putting the updated data back"). Returns
+   * null on failure so the caller can fall back to the cached row instead
+   * of blocking the edit flow entirely.
+   */
+  const fetchUserForEdit = useCallback(async (id) => {
+    try {
+      return await userService.fetchUserById(id);
+    } catch {
+      return null;
+    }
+  }, []);
+
+  /**
+   * Clears the local cache and re-fetches the original seed data from the
+   * API - lets a user (or an interviewer poking at the demo) get back to a
+   * clean slate without clearing browser storage manually.
+   */
+  const resetToSeedData = useCallback(async () => {
+    setError(null);
+    setLoading(true);
+    clearStoredUsers();
+    try {
+      const data = await userService.fetchUsers();
+      setUsers(data);
+      saveStoredUsers(data);
+    } catch {
+      setError('Could not reset data. Please try again.');
+    } finally {
+      setLoading(false);
     }
   }, []);
 
@@ -140,6 +208,8 @@ export function useUsers() {
     addUser,
     editUser,
     removeUser,
+    fetchUserForEdit,
+    resetToSeedData,
     search,
     setSearch,
     filters,
